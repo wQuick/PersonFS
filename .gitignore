@@ -133,3 +133,5 @@ tests/
 toto*
 _traduko.jar
 *.old
+
+.idea/
