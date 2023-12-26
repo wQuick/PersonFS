@@ -15,7 +15,7 @@
 # GNU Ĝenerala Publika Permesilo por pliaj detaloj.
 #
 # Vi devus esti ricevinta kopion de la Ĝenerala Publika Permesilo de GNU
-# kune kun ĉi tiu programo; se ne, skribu al 
+# kune kun ĉi tiu programo; se ne, skribu al
 # Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
@@ -40,7 +40,7 @@ register(GRAMPLET,
          detached_width = 500,
          detached_height = 500,
          version= VERSIO,
-         gramps_target_version= '5.1',
+         gramps_target_version= '5.2',
          navtypes=["Person"],
          )
 
@@ -49,7 +49,7 @@ register(TOOL,
     name  = _("Importo de FamilySearch datumoj"),
     description =  _("FamilySearch."),
     version =  VERSIO,
-    gramps_target_version = '5.1',
+    gramps_target_version = '5.2',
     status = STABLE,
     fname = 'Importo.py',
     category = TOOL_DBPROC,
@@ -63,7 +63,7 @@ register(TOOL,
     name  = _("FamilySearch : kompari"),
     description =  _("FamilySearch : kompari gramps personojn kun FS personojn."),
     version =  VERSIO,
-    gramps_target_version = '5.1',
+    gramps_target_version = '5.2',
     status = STABLE,
     fname = 'komparo.py',
     category = TOOL_DBPROC,

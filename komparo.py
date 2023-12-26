@@ -15,7 +15,7 @@
 # GNU Ĝenerala Publika Permesilo por pliaj detaloj.
 #
 # Vi devus esti ricevinta kopion de la Ĝenerala Publika Permesilo de GNU
-# kune kun ĉi tiu programo; se ne, skribu al 
+# kune kun ĉi tiu programo; se ne, skribu al
 # Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 #
 
@@ -66,11 +66,11 @@ class FSKomparoOpcionoj(MenuToolOptions):
   def __general_options(self, menu):
     #print("KO.go")
     category_name = _("FamilySearch Komparo Opcionoj")
-    self.__gui_tagoj = NumberOption(_("Nombro tagoj"), 0, 0, 99) 
+    self.__gui_tagoj = NumberOption(_("Nombro tagoj"), 0, 0, 99)
     self.__gui_tagoj.set_help(_("Nombro da tagoj inter du komparoj"))
     menu.add_option(category_name, "gui_tagoj", self.__gui_tagoj)
 
-    self.__gui_deviga = BooleanOption(_("Devigi komparo"), True) 
+    self.__gui_deviga = BooleanOption(_("Devigi komparo"), True)
     self.__gui_deviga.set_help(_("Kompari sendepende de la nombro da tagoj."))
     menu.add_option(category_name, "gui_deviga", self.__gui_deviga)
 
@@ -108,8 +108,8 @@ class FSKomparo(PluginWindows.ToolManagedWindowBatch):
     if not PersonFS.PersonFS.aki_sesio(self):
       WarningDialog(_('Ne konektita al FamilySearch'))
       return
-    progress = ProgressMeter(_("FamilySearch : Komparo"), _trans.gettext('Starting'),
-                   can_cancel=True, parent=self.uistate.window)
+    #progress = ProgressMeter(_("FamilySearch : Komparo"), _trans.gettext('Starting'), can_cancel=True, parent=self.uistate.window)
+    progress = ProgressMeter(_("FamilySearch : Komparo"), _trans.gettext('Starting'), True, parent=self.uistate.window)
     self.uistate.set_busy_cursor(True)
     self.dbstate.db.disable_signals()
     if not PersonFS.PersonFS.fs_Tree:
@@ -251,7 +251,7 @@ def SeksoKomp(grPersono, fsPersono ) :
         , '', grSekso
         , '', fsSekso
         , None, 'sekso', None, None
-        ) 
+        )
 
 def FaktoKomp(db, person, fsPerso, grEvent , fsFact ) :
   grFakto = utila.get_grevent(db, person, EventType(grEvent))
@@ -308,7 +308,7 @@ def NomojKomp(grPersono, fsPerso ) :
       koloro = "green"
     res = list()
     res.append ( ( koloro , _trans.gettext('Name')
-        , '', grNomo.get_primary_surname().surname + ', ' + grNomo.first_name 
+        , '', grNomo.get_primary_surname().surname + ', ' + grNomo.first_name
         , '', fsNomo.akSurname() +  ', ' + fsNomo.akGiven()
         , False, 'nomo1', str(grNomo), fsNomo.id, grNomo.get_primary_surname().surname, grNomo.first_name
         ))
@@ -324,7 +324,7 @@ def NomojKomp(grPersono, fsPerso ) :
           fsNomoj.remove(x)
           break
       res.append (( koloro , '  ' + _trans.gettext('Name')
-        , '', grNomo.get_primary_surname().surname + ', ' + grNomo.first_name 
+        , '', grNomo.get_primary_surname().surname + ', ' + grNomo.first_name
         , '', fsNomo.akSurname() +  ', ' + fsNomo.akGiven()
         , False, 'nomo', str(grNomo), fsNomo.id, grNomo.get_primary_surname().surname, grNomo.first_name
         ))
@@ -369,7 +369,7 @@ def grperso_datoj (db, grPersono) :
     if grDeath.date.modifier == Date.MOD_AFTER:
       res = res + val + '/'
     else :
-      res = res + val 
+      res = res + val
   else :
     res = res + '....'
   return res
@@ -509,7 +509,7 @@ def aldEdzKompNotoj(db, grPersono, fsPerso) :
   fsInfanoj = fsPerso._infanojCP.copy()
   fsid = fsPerso.id
   res = list()
-  
+
   for family_handle in grPersono.get_family_handle_list():
     family = db.get_family_from_handle(family_handle)
     if family :
@@ -589,7 +589,7 @@ def aldEdzKomp(db, grPersono, fsPerso) :
   fsInfanoj = fsPerso._infanojCP.copy()
   fsid = fsPerso.id
   res = list()
-  
+
   for family_handle in grPersono.get_family_handle_list():
     family = db.get_family_from_handle(family_handle)
     if family :
@@ -621,7 +621,7 @@ def aldEdzKomp(db, grPersono, fsPerso) :
           fsParoId = paro.id
           fsEdzoj.remove(paro)
           break
-      
+
       koloro = "yellow"
       if edzoFsid and edzoFsid == fsEdzoId :
         koloro = "green"
@@ -711,7 +711,7 @@ def aldEdzKomp(db, grPersono, fsPerso) :
         fsFaktoDato = str(fsFakto.date or '')
         if fsFakto.place:
           fsFaktoLoko = fsFakto.place.original or ''
-        else : fsFaktoLoko = '' 
+        else : fsFaktoLoko = ''
         fsFaktoPriskribo = fsFakto.value or ''
         if fsFaktoLoko == '' :
           fsValoro = fsFaktoPriskribo
@@ -722,7 +722,7 @@ def aldEdzKomp(db, grPersono, fsPerso) :
           , fsFaktoDato , fsValoro
           , False, 'edzoFakto', None ,fsFakto.id, family.handle, fsParo.id
          ) )
-        
+
       for child_ref in family.get_child_ref_list():
         infano = db.get_person_from_handle(child_ref.ref)
         infanoNomo = infano.primary_name
@@ -964,13 +964,13 @@ def kompariFsGr(fsPersono,grPersono,db,model=None,dupdok=False):
   if resNomoj :
     if resNomoj[0][0] != "green" : FS_Esenco = True
     listres.append(resNomoj.pop(0))
-  res = FaktoKomp(db, grPersono, fsPersono, EventType.BIRTH , "http://gedcomx.org/Birth") 
+  res = FaktoKomp(db, grPersono, fsPersono, EventType.BIRTH , "http://gedcomx.org/Birth")
   if res: listres.append(res)
   if res and res[0] != "green" : FS_Esenco = True
   res = FaktoKomp(db, grPersono, fsPersono, EventType.BAPTISM , "http://gedcomx.org/Baptism")
   if res: listres.append(res)
   if res and res[0] != "green" : FS_Esenco = True
-  res = FaktoKomp(db, grPersono, fsPersono, EventType.DEATH , "http://gedcomx.org/Death") 
+  res = FaktoKomp(db, grPersono, fsPersono, EventType.DEATH , "http://gedcomx.org/Death")
   if res: listres.append(res)
   if res and res[0] != "green" : FS_Esenco = True
   res = FaktoKomp(db, grPersono, fsPersono, EventType.BURIAL , "http://gedcomx.org/Burial")
@@ -1086,7 +1086,7 @@ def kompariFsGr(fsPersono,grPersono,db,model=None,dupdok=False):
       try:
         j = r.json()
         if ( 'data' in j
-            and 'matches' in j['data'] 
+            and 'matches' in j['data']
             and len(j['data']['matches']) >= 1 ) :
           FS_Dok = True
         else:
@@ -1095,8 +1095,8 @@ def kompariFsGr(fsPersono,grPersono,db,model=None,dupdok=False):
         self.write_log("WARNING: corrupted file from %s, error: %s" % (mendo, e))
         print(r.content)
   dbPersono.stat_dato = int(time.time())
-  if ( FS_Identa 
-       and ( not dbPersono.konf_dato 
+  if ( FS_Identa
+       and ( not dbPersono.konf_dato
           or (grPersono.change > dbPersono.konf_dato)
           or (fsPersono._last_modified > dbPersono.konf_dato))):
     dbPersono.konf_dato = dbPersono.stat_dato
@@ -1108,7 +1108,7 @@ def kompariFsGr(fsPersono,grPersono,db,model=None,dupdok=False):
     FS_FS = True
   else :
     FS_FS = False
-  ret = list() 
+  ret = list()
   if PersonFS.PersonFS.fs_etikedado :
     if db.transaction :
       intr = True
@@ -1137,4 +1137,3 @@ def kompariFsGr(fsPersono,grPersono,db,model=None,dupdok=False):
   return ret
 
   # FARINDAĴOJ : fontoj, notoj, memoroj, attributoj …
-
