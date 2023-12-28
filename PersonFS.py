@@ -986,7 +986,7 @@ class PersonFS(Gramplet):
       parent_modal = self.uistate.window.get_modal()
       if parent_modal:
         self.uistate.window.set_modal(False)
-      TreeRes = self.top.get_object("PersonFSResRes")
+      TreeRes = self.top.get_object("PersonFSResRes")      
       titles = [  
                 (_trans.gettext('score'), 1, 80),
                 (_('FS Id'), 2, 90),
@@ -996,7 +996,7 @@ class PersonFS(Gramplet):
                 (_trans.gettext('Parents'), 6, 250),
                 (_trans.gettext('Spouses'), 7, 250),
              ]
-      self.modelRes = ListModel(TreeRes, titles,self.SerSelCxangxo)
+      self.modelRes = ListModel(TreeRes, titles, self.SerSelCxangxo)
     active_handle = self.get_active('Person')
     person = self.dbstate.db.get_person_from_handle(active_handle)
     grNomo = person.primary_name
@@ -1079,7 +1079,7 @@ class PersonFS(Gramplet):
     if loko :
       mendo = mendo + "q.anyPlace=%s&" % loko
     #mendo = mendo + "offset=0&count=10"
-    mendo = mendo + "offset=0&count=10"
+    mendo = mendo + "offset=0&count=100"
     datumoj = tree._FsSeanco.get_jsonurl(
                     mendo ,{"Accept": "application/x-gedcomx-atom+json"}
                 )
