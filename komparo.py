@@ -48,6 +48,7 @@ import fs_db
 import tree
 import utila
 from constants import GEDCOMX_GRAMPS_FAKTOJ,GRAMPS_GEDCOMX_FAKTOJ
+from utila import get_fsftid # By Waldemir Silva
 
 #from objbrowser import browse ;browse(locals())
 #import pdb; pdb.set_trace()
@@ -969,6 +970,7 @@ def aldAliajFaktojKomp(db, person, fsPerso ) :
 def kompariFsGr(fsPersono,grPersono,db,model=None,dupdok=False):
   dbPersono= fs_db.db_stato(db,grPersono.handle)
   dbPersono.get()
+  fsid = get_fsftid(grPersono)  # By Waldemir Silva
   if (model == None and hasattr(fsPersono,'_datmod')
       and dbPersono.stat_dato > fsPersono._datmod
       and dbPersono.stat_dato > grPersono.change):
@@ -1152,7 +1154,9 @@ def kompariFsGr(fsPersono,grPersono,db,model=None,dupdok=False):
       if not val and tag_fs.handle in grPersono.tag_list:
         grPersono.remove_tag(tag_fs.handle)
       if tag_fs and val and tag_fs.handle not in grPersono.tag_list:
-        grPersono.add_tag(tag_fs.handle)
+        #grPersono.add_tag(tag_fs.handle)
+        if fsid != '': # By Waldemir Silva
+          grPersono.add_tag(tag_fs.handle) # By Waldemir Silva
     db.commit_person(grPersono, txn, grPersono.change)
     dbPersono.gramps_datomod = grPersono.change
     if fsPersono.id :
