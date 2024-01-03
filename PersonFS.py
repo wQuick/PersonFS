@@ -383,9 +383,6 @@ class PersonFS(Gramplet):
                 break
             if not grNomo :
               for grNomo in grPersono.alternate_names :
-                #if (     grNomo.get_primary_surname().surname == grSurname
-                #     and grNomo.first_name == grGiven) :
-                #  break
                 if (     grNomo.get_surname() == grSurname
                      and grNomo.first_name == grGiven) :
                   break
@@ -830,7 +827,6 @@ class PersonFS(Gramplet):
     nf.parts.add(np1)
     np2=gedcomx.NamePart()
     np2.type = "http://gedcomx.org/Surname"
-    #np2.value = grNomo.get_primary_surname().surname
     np2.value = grNomo.get_surname()
     nf.parts.add(np2)
     nomo.preferred = True
@@ -986,7 +982,7 @@ class PersonFS(Gramplet):
       parent_modal = self.uistate.window.get_modal()
       if parent_modal:
         self.uistate.window.set_modal(False)
-      TreeRes = self.top.get_object("PersonFSResRes")      
+      TreeRes = self.top.get_object("PersonFSResRes")
       titles = [  
                 (_trans.gettext('score'), 1, 80),
                 (_('FS Id'), 2, 90),
@@ -996,11 +992,10 @@ class PersonFS(Gramplet):
                 (_trans.gettext('Parents'), 6, 250),
                 (_trans.gettext('Spouses'), 7, 250),
              ]
-      self.modelRes = ListModel(TreeRes, titles, self.SerSelCxangxo)
+      self.modelRes = ListModel(TreeRes, titles,self.SerSelCxangxo)
     active_handle = self.get_active('Person')
     person = self.dbstate.db.get_person_from_handle(active_handle)
     grNomo = person.primary_name
-    #self.top.get_object("fs_nomo_eniro").set_text(person.primary_name.get_primary_surname().surname)
     self.top.get_object("fs_nomo_eniro").set_text(person.primary_name.get_surname())
     self.top.get_object("fs_anomo_eniro").set_text(person.primary_name.first_name)
     if person.get_gender() == Person.MALE :
@@ -1078,8 +1073,7 @@ class PersonFS(Gramplet):
     loko = self.top.get_object("fs_loko_eniro").get_text()
     if loko :
       mendo = mendo + "q.anyPlace=%s&" % loko
-    #mendo = mendo + "offset=0&count=10"
-    mendo = mendo + "offset=0&count=100"
+    mendo = mendo + "offset=0&count=10"
     datumoj = tree._FsSeanco.get_jsonurl(
                     mendo ,{"Accept": "application/x-gedcomx-atom+json"}
                 )
@@ -1392,15 +1386,8 @@ class PersonFS(Gramplet):
           else :
             fsEdzo = gedcomx.Person()
           fsNomo = fsEdzo.akPrefNomo()
-          
-         # self.modelKomp.add(['white',_trans.gettext('Spouse')
-         #       , komparo.grperso_datoj(self.dbstate.db, edzo) , edzoNomo.get_primary_surname().surname + ', ' + edzoNomo.first_name + ' [' + edzoFsid + ']'
-         # , komparo.fsperso_datoj(self.dbstate.db, fsEdzo) , fsNomo.akSurname() +  ', ' + fsNomo.akGiven()  + ' [' + fsEdzoId  + ']'
-         # , False, 'edzo', edzo_handle ,fsEdzoId , family.handle, fsParoId
-         #  ], node=familioj_id )
-          
           self.modelKomp.add(['white',_trans.gettext('Spouse')
-                , komparo.grperso_datoj(self.dbstate.db, edzo) , edzoNomo.get_surname().surname + ', ' + edzoNomo.first_name + ' [' + edzoFsid + ']'
+                , komparo.grperso_datoj(self.dbstate.db, edzo) , edzoNomo.get_surname() + ', ' + edzoNomo.first_name + ' [' + edzoFsid + ']'
           , komparo.fsperso_datoj(self.dbstate.db, fsEdzo) , fsNomo.akSurname() +  ', ' + fsNomo.akGiven()  + ' [' + fsEdzoId  + ']'
           , False, 'edzo', edzo_handle ,fsEdzoId , family.handle, fsParoId
            ], node=familioj_id )
