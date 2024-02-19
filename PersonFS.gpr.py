@@ -71,3 +71,17 @@ register(TOOL,
     optionclass = 'FSKomparoOpcionoj',
     tool_modes = [TOOL_MODE_GUI],
 )
+
+register(TOOL,
+    id    = 'FamilySearch AutoMatch',
+    name  = _("FamilySearch : AutoMatch"),
+    description =  _("FamilySearch : automatch gramps personojn kun FS personojn."),
+    version =  VERSIO,
+    gramps_target_version = '5.2',
+    status = STABLE,
+    fname = 'AutoMatch.py',
+    category = TOOL_DBPROC,
+    toolclass = 'FSAutoMatch',
+    optionclass = 'FSAutoMatchOpcionoj',
+    tool_modes = [TOOL_MODE_GUI],
+)
