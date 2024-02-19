@@ -984,7 +984,7 @@ class PersonFS(Gramplet):
         self.uistate.window.set_modal(False)
       TreeRes = self.top.get_object("PersonFSResRes")
       titles = [  
-                (_trans.gettext('score'), 1, 80),
+                (_trans.gettext('score'), 1, 100),
                 (_('FS Id'), 2, 90),
                 (_('Nomo, antaŭnomo'), 3, 200),
                 (_trans.gettext('Birth'), 4, 250),
@@ -992,9 +992,27 @@ class PersonFS(Gramplet):
                 (_trans.gettext('Parents'), 6, 250),
                 (_trans.gettext('Spouses'), 7, 250),
              ]
-      self.modelRes = ListModel(TreeRes, titles,self.SerSelCxangxo)
+      self.modelRes = ListModel(TreeRes, titles, self.SerSelCxangxo)
+
+    # By Waldemir Dias da Silva
+    self.top.get_object("fs_nomo_eniro").set_text("")
+    self.top.get_object("fs_anomo_eniro").set_text("")
+    self.top.get_object("fs_sekso_eniro").set_text("")
+    self.top.get_object("fs_nasko_eniro").set_text("")
+    self.top.get_object("fs_loko_eniro").set_text("")
+    self.top.get_object("fs_morto_eniro").set_text("")
+    self.top.get_object("fs_mother_eniro").set_text("")
+    self.top.get_object("fs_smother_eniro").set_text("")
+    self.top.get_object("fs_father_eniro").set_text("")
+    self.top.get_object("fs_sfather_eniro").set_text("")
+    self.top.get_object("fs_sposes_eniro").set_text("")
+    self.top.get_object("fs_ssposes_eniro").set_text("")
+    self.modelRes.clear()
+    # - Close by Waldemir Dias da Silva
+
     active_handle = self.get_active('Person')
     person = self.dbstate.db.get_person_from_handle(active_handle)
+
     grNomo = person.primary_name
     self.top.get_object("fs_nomo_eniro").set_text(person.primary_name.get_surname())
     self.top.get_object("fs_anomo_eniro").set_text(person.primary_name.first_name)
@@ -1040,6 +1058,47 @@ class PersonFS(Gramplet):
     else :
       self.top.get_object("fs_loko_eniro").set_text( '')
 
+    # By Waldemir Dias da Silva
+    # Get father and mother name
+    family_handle = None
+    father = None
+    father_handle = None
+    mother = None
+    mother_handle = None
+    mother_name = ''
+    father_name = ''
+    family_handle = person.get_main_parents_family_handle()
+    if family_handle:
+        family = self.dbstate.db.get_family_from_handle(family_handle)
+        mother_handle = family.get_mother_handle()
+        father_handle = family.get_father_handle()
+        if mother_handle:
+            mother = self.dbstate.db.get_person_from_handle(mother_handle)
+            mother_name = name_displayer.display(mother)
+            self.top.get_object("fs_mother_eniro").set_text(mother.primary_name.get_surname())
+            self.top.get_object("fs_smother_eniro").set_text(mother.primary_name.first_name)
+        if father_handle:
+            father = self.dbstate.db.get_person_from_handle(father_handle)
+            father_name = name_displayer.display(father)
+            self.top.get_object("fs_father_eniro").set_text(father.primary_name.get_surname())
+            self.top.get_object("fs_sfather_eniro").set_text(father.primary_name.first_name)
+
+    # Get Spose Name
+    for family_handle in person.get_family_handle_list():
+      family = self.dbstate.db.get_family_from_handle(family_handle)
+      if family:
+        edzo_handle = family.mother_handle
+        if edzo_handle == person.handle:
+          edzo_handle = family.father_handle
+        if edzo_handle:
+          edzo = self.dbstate.db.get_person_from_handle(edzo_handle)
+          edzo_name = edzo.primary_name
+          self.top.get_object("fs_sposes_eniro").set_text(edzo.primary_name.get_surname())
+          self.top.get_object("fs_ssposes_eniro").set_text(edzo.primary_name.first_name)
+          break
+
+    # - Close By Waldemir Dias da Silva
+
     self.ButLancxi_clicked(None)
     self.Sercxi.show()
     res = self.Sercxi.run()
@@ -1073,7 +1132,33 @@ class PersonFS(Gramplet):
     loko = self.top.get_object("fs_loko_eniro").get_text()
     if loko :
       mendo = mendo + "q.anyPlace=%s&" % loko
-    mendo = mendo + "offset=0&count=10"
+
+    # By Waldemir Dias da Silva
+
+    ft_mother_name = self.top.get_object("fs_smother_eniro").get_text()
+    if ft_mother_name:
+      mendo = mendo + "q.motherGivenName=%s&" % ft_mother_name
+    ls_mother_name = self.top.get_object("fs_mother_eniro").get_text()
+    if ls_mother_name:
+      mendo = mendo + "q.motherSurname=%s&" % ls_mother_name
+
+    ft_father_name = self.top.get_object("fs_sfather_eniro").get_text()
+    if ft_father_name:
+      mendo = mendo + "q.fatherGivenName=%s&" % ft_father_name
+    ls_father_name = self.top.get_object("fs_father_eniro").get_text()
+    if ls_father_name:
+      mendo = mendo + "q.fatherSurname=%s&" % ls_father_name
+
+    ft_spose_name = self.top.get_object("fs_ssposes_eniro").get_text()
+    if ft_spose_name:
+      mendo = mendo + "q.spouseGivenName=%s&" % ft_spose_name
+    ls_spose_name = self.top.get_object("fs_sposes_eniro").get_text()
+    if ls_spose_name:
+      mendo = mendo + "q.spouseSurname=%s&" % ls_spose_name
+
+    # Close By Waldemir Dias da Silva
+
+    mendo = mendo + "offset=0&count=100"
     datumoj = tree._FsSeanco.get_jsonurl(
                     mendo ,{"Accept": "application/x-gedcomx-atom+json"}
                 )
@@ -1164,7 +1249,8 @@ class PersonFS(Gramplet):
       else:
         fsPatrinoNomo = gedcomx.Name()
       self.modelRes.add( ( 
-		  str(entry.get("score"))
+		  #str(entry.get("score"))
+          "{:>011.8F}".format(entry.get("score"))
 		, fsId
 		, fsNomo.akSurname() +  ', ' + fsNomo.akGiven()
 		, fsBirth
