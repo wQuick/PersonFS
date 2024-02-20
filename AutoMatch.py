@@ -68,15 +68,17 @@ class FSAutoMatchOpcionoj(MenuToolOptions):
   def __general_options(self, menu):
     #print("KO.go")
     category_name = _("FamilySearch AutoMatch Opcionoj")
+
     self.__gui_tagoj = NumberOption(_("Nombro tagoj"), 0, 0, 99)
-    self.__gui_tagsc = NumberOption(_("Score"), 21, 15, 99)
+    self.__gui_tagsc = NumberOption(_("Score"), 26, 7, 99)
+    self.__gui_deviga = BooleanOption(_("Devigi komparo"), False)
+
     self.__gui_tagoj.set_help(_("Nombro da tagoj inter du komparoj"))
     self.__gui_tagsc.set_help(_("Minimum score number for automatch"))
+    self.__gui_deviga.set_help(_("Kompari sendepende de la nombro da tagoj."))
+
     menu.add_option(category_name, "gui_tagoj", self.__gui_tagoj)
     menu.add_option(category_name, "gui_tagsc", self.__gui_tagsc)
-
-    self.__gui_deviga = BooleanOption(_("Devigi komparo"), True) 
-    self.__gui_deviga.set_help(_("Kompari sendepende de la nombro da tagoj."))
     menu.add_option(category_name, "gui_deviga", self.__gui_deviga)
 
     all_persons = rules.person.Everyone([])
@@ -153,8 +155,11 @@ class FSAutoMatch(PluginWindows.ToolManagedWindowBatch):
       person = self.db.get_person_from_handle(handle)
       fsid = utila.get_fsftid(person)
       fsidscore = get_fsftidscore(person)
-      if (fsid != '') and (fsidscore != ''):
+
+      #if (not devigi) and ((fsid != '') or (fsidscore != '')):
+      if (fsid != ''):
         continue
+
       self.db.dbapi.execute("select stat_dato from personfs_stato where p_handle=?",[handle])
       datumoj = self.db.dbapi.fetchone()
       if datumoj and datumoj[0] :
@@ -199,6 +204,7 @@ class FSAutoMatch(PluginWindows.ToolManagedWindowBatch):
           print("utila.ligi_gr_fs_score : klaso ne trakta : " + grObjekto.__class__.__name__)
       if not intr:
         db.transaction_commit(txn)
+
     def DataRes(person, datumoj):
       for entry in datumoj["entries"]:
         print (entry.get("id")+ ";  score = "+str(entry.get("score")))
@@ -207,7 +213,7 @@ class FSAutoMatch(PluginWindows.ToolManagedWindowBatch):
         ligi_gr_fs_score(self.dbstate.db, person, str(fsScore))
         if fsScore>=tagsc:
            #OkDialog(_('Achei Maior que: ' + str(fsScore) ))
-           #utila.ligi_gr_fs(self.dbstate.db, person, fsid)
+           utila.ligi_gr_fs(self.dbstate.db, person, fsid)
            print(entry.get("id") + ";  score = " + str(entry.get("score")))
       return
     def match_paro_p2(paro):
