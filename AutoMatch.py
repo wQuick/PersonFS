@@ -22,7 +22,7 @@
 import email.utils
 import time
 from urllib.parse import unquote
-from utila import get_fsftid, get_grevent, get_fsfact, grdato_al_formal
+from utila import get_fsftid, get_grevent, get_fsfact, grdato_al_formal, ligi_gr_fs
 from gramps.gen.lib.attrtype import AttributeType
 
 from gramps.gen.plug.menu import FilterOption, TextOption, NumberOption, BooleanOption
@@ -77,8 +77,8 @@ class FSAutoMatchOpcionoj(MenuToolOptions):
     self.__gui_tagsc.set_help(_("Minimum score number for automatch"))
     self.__gui_deviga.set_help(_("Kompari sendepende de la nombro da tagoj."))
 
-    menu.add_option(category_name, "gui_tagoj", self.__gui_tagoj)
-    menu.add_option(category_name, "gui_tagsc", self.__gui_tagsc)
+    menu.add_option(category_name, "gui_tagoj" , self.__gui_tagoj )
+    menu.add_option(category_name, "gui_tagsc" , self.__gui_tagsc )
     menu.add_option(category_name, "gui_deviga", self.__gui_deviga)
 
     all_persons = rules.person.Everyone([])
@@ -135,10 +135,12 @@ class FSAutoMatch(PluginWindows.ToolManagedWindowBatch):
     fs_db.create_schema(self.db)
     fs_db.create_tags(self.dbstate.db)
     # krei la ordigitan liston de personoj por procesi
+    
     filter_ = self.options.menu.get_option_by_name('Person').get_filter()
     tagoj = self.options.menu.get_option_by_name('gui_tagoj').get_value()
     devigi = self.options.menu.get_option_by_name('gui_deviga').get_value()
     tagsc = self.options.menu.get_option_by_name('gui_tagsc').get_value()
+    
     maks_dato = int(time.time()) - tagoj*24*3600
     self.plist = set(filter_.apply(self.db, self.db.iter_person_handles()))
     pOrdList = list()
@@ -153,7 +155,7 @@ class FSAutoMatch(PluginWindows.ToolManagedWindowBatch):
         return
       progress.step()
       person = self.db.get_person_from_handle(handle)
-      fsid = utila.get_fsftid(person)
+      fsid = get_fsftid(person)
       fsidscore = get_fsftidscore(person)
 
       #if (not devigi) and ((fsid != '') or (fsidscore != '')):
@@ -167,6 +169,7 @@ class FSAutoMatch(PluginWindows.ToolManagedWindowBatch):
           pOrdList.append([datumoj[0],handle,fsid])
       else:
         pOrdList.append([0,handle,fsid])
+        
     def akiUnua(ero):
       return ero[0]
 
@@ -187,10 +190,10 @@ class FSAutoMatch(PluginWindows.ToolManagedWindowBatch):
         intr = False
         txn = DbTxn(_("FamilySearch etikedoj"), db)
       for attr in grObjekto.get_attribute_list():
-        if attr.type.value == '_FSFTID_SCORE':
+        if attr.get_type() == '_FSFTID_SCORE':
           attr.set_value(fsidscore)
           break
-      if not attr or attr.type.value != '_FSFTID_SCORE':
+      if not attr or attr.get_type() != '_FSFTID_SCORE':
         attr = Attribute()
         attr.set_type((AttributeType.CUSTOM, '_FSFTID_SCORE'))
         attr.set_value(fsidscore)
@@ -213,9 +216,10 @@ class FSAutoMatch(PluginWindows.ToolManagedWindowBatch):
         ligi_gr_fs_score(self.dbstate.db, person, str(fsScore))
         if fsScore>=tagsc:
            #OkDialog(_('Achei Maior que: ' + str(fsScore) ))
-           utila.ligi_gr_fs(self.dbstate.db, person, fsid)
+           ligi_gr_fs(self.dbstate.db, person, fsid)
            print(entry.get("id") + ";  score = " + str(entry.get("score")))
       return
+  
     def match_paro_p2(paro):
       person = self.db.get_person_from_handle(paro[1])
 
@@ -266,11 +270,11 @@ class FSAutoMatch(PluginWindows.ToolManagedWindowBatch):
         pe_birth_place = place.name.value
 
       # Get father and mother name
-      family_handle = None
-      father = None
-      father_handle = None
-      mother = None
+      family_handle = None      
       mother_handle = None
+      father_handle = None      
+      father = None     
+      mother = None
 
       pe_mother_givename = ''
       pe_mother_surname = ''
@@ -312,21 +316,21 @@ class FSAutoMatch(PluginWindows.ToolManagedWindowBatch):
       # find familysearch
       mendo = "/platform/tree/search?"
 
-      if pe_surname:         mendo = mendo + "q.surname=%s&" % pe_surname
-      if pe_givename:        mendo = mendo + "q.givenName=%s&" % pe_givename
-      if pe_sex:             mendo = mendo + "q.sex=%s&" % pe_sex
-      if pe_birth:           mendo = mendo + "q.birthLikeDate=%s&" % pe_birth
-      if pe_death:           mendo = mendo + "q.deathLikeDate=%s&" % pe_death
-      if pe_birth_place:     mendo = mendo + "q.anyPlace=%s&" % pe_birth_place
+      if pe_surname:         mendo = mendo + "q.surname=%s&"         % pe_surname
+      if pe_givename:        mendo = mendo + "q.givenName=%s&"       % pe_givename
+      if pe_sex:             mendo = mendo + "q.sex=%s&"             % pe_sex
+      if pe_birth:           mendo = mendo + "q.birthLikeDate=%s&"   % pe_birth
+      if pe_death:           mendo = mendo + "q.deathLikeDate=%s&"   % pe_death
+      if pe_birth_place:     mendo = mendo + "q.anyPlace=%s&"        % pe_birth_place
 
       if pe_mother_givename: mendo = mendo + "q.motherGivenName=%s&" % pe_mother_givename
-      if pe_mother_surname:  mendo = mendo + "q.motherSurname=%s&" % pe_mother_surname
+      if pe_mother_surname:  mendo = mendo + "q.motherSurname=%s&"   % pe_mother_surname
 
       if pe_father_givename: mendo = mendo + "q.fatherGivenName=%s&" % pe_father_givename
-      if pe_father_surname:  mendo = mendo + "q.fatherSurname=%s&" % pe_father_surname
+      if pe_father_surname:  mendo = mendo + "q.fatherSurname=%s&"   % pe_father_surname
 
       if pe_spose_givename:  mendo = mendo + "q.spouseGivenName=%s&" % pe_spose_givename
-      if pe_spose_surname:   mendo = mendo + "q.spouseSurname=%s&" % pe_spose_surname
+      if pe_spose_surname:   mendo = mendo + "q.spouseSurname=%s&"   % pe_spose_surname
 
       mendo = mendo + "offset=0&count=1"
 
